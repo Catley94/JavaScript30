@@ -20,13 +20,24 @@
   //line width
   ctx.lineWidth = 100;
 
+//look up globalCompositeOperation
+//ctx.globalCompositeOperation = 'multiply';
+
   let isDrawing = false;
   let lastX = 0;
   let lastY = 0;
   let hue = 0;
+  let direction = true;
 
+/*
+Function Draw, only active when isDrawing is true.
+Sets the strokeStyle color with HSL
+
+*/
   function draw(e) {
     if(!isDrawing) return; // stop the fn from running when they are not moused down
+    ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+    //style of drawing, from point, to point
     ctx.beginPath();
     //start from
     ctx.moveTo(lastX, lastY);
@@ -34,17 +45,54 @@
     ctx.lineTo(e.offsetX, e.offsetY);
     ctx.stroke();
     [lastX, lastY] = [e.offsetX, e.offsetY];
+    hue++;
+
+    /*
+    If linewidth is greater than 100 or less than 1, switch the value of direction
+    */
+    if(ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
+      direction = !direction;
+    }
+    /*
+    If direction is true, increase lineWidth, if false, decrease lineWidth
+    */
+    if(direction) {
+      ctx.lineWidth++;
+    } else {
+      ctx.lineWidth--;
+    }
+    /*
+    if hue is greater than 360, change value of hue to 0
+    */
+    if(hue > 360) {
+      hue = 0;
+    }
+    
     
   }
 
+/*
+Event listeners
+*/
+/*
+mousedown event listener, when mouse is 'clicked' and 'held', set isDrawing to true, update variables, lastX with e.offsetX and lastY with e.offsetY
+*/
   canvas.addEventListener('mousedown', (e) => {
     isDrawing = true;
     [lastX, lastY] = [e.offsetX, e.offsetY];
     });
 
+/*
+When mouse is 'moving' call the draw function
+*/
   canvas.addEventListener('mousemove', draw);
-
+/*
+When mouse is not being clicked or held, set isDrawing to false
+*/
   canvas.addEventListener('mouseup', () => isDrawing = false);
+/*
+When mouse is off active screen, set isDrawing to false
+*/
   canvas.addEventListener('mouseout', () => isDrawing = false);
 
 </script>
